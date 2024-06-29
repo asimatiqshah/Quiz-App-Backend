@@ -1,0 +1,8 @@
+Mehmoodabad!@3
+
+
+
+
+mongodb+srv://Quiz-App-DB:Mehmoodabad!@3@quizmasterdb.jvq3hqb.mongodb.net/?retryWrites=true&w=majority&appName=QuizMasterDB
+
+mongodb+srv://shahasimatiq:Mehmoodabad!@3@quizmasterdb.jvq3hqb.mongodb.net/?retryWrites=true&w=majority&appName=QuizMasterDB
