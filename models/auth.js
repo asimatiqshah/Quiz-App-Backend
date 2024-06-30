@@ -7,10 +7,11 @@ const userSchema = new mongoose.Schema(
         gender: { type: String, required: true },
         role: { type: String, required: true },
         createdAt: { type: String, required: true },
+        vistedHistory: { type: Array, required: true },
     }
 )
 
 // Create a model
-const AuthModal = mongoose.model('user_info', userSchema);
+const AuthModal = mongoose.model('user-details', userSchema);
 
 module.exports = AuthModal;

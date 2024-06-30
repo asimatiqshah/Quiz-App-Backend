@@ -2,6 +2,7 @@ const express = require('express');
 const { handleCreateNewUser } = require('../controllers/auth');
 const router = express.Router();
 //Routes
-router.get('/',handleCreateNewUser);
+router.post('/signup',handleCreateNewUser);
+
 
 module.exports = router;
