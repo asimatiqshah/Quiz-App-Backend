@@ -25,8 +25,10 @@ const handleCreateNewUser = async (req, res) => {
 
     //200
     try {
+        const passwordHash = btoa(password);
+        console.log(passwordHash);
         let result = await AuthModal.create({
-            name, email, password, gender, role, createdAt, vistedHistory
+            name, email, password:passwordHash, gender, role, createdAt, vistedHistory
         });
         if (result) {
             return res.status(200).send({
@@ -43,7 +45,31 @@ const handleCreateNewUser = async (req, res) => {
 const handleLoginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
+        //400
+        if(!email || !password){
+            return res.status(400).send({
+                status:false,
+                message:"All Fields Required"
+            })
+        }
+        // Find the user by username
         let result = await AuthModal.findOne({ email });
+        if(!result){
+            return res.status(401).send({
+                status:false,
+                message:"Email Not Exist"
+            })
+        }
+        // Compare the password
+        const decodePass = atob(result.password);  // enter database saved password
+        console.log(decodePass);
+        if(decodePass !== password){
+            return res.status(400).send({
+                status:false,
+                message:"Password is invalid"
+            })
+        }
+
         let currentTime = new Date();
 
         //visitedHistory updated
