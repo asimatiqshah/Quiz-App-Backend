@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const authRouter = require('./routes/auth.js');
+const questionRouter = require('./routes/quizQuestions.js');
 const { ConnectionDB } = require('./connection.js');
 
 //variable
@@ -15,7 +16,8 @@ ConnectionDB(dbUrl);
 app.use(express.json());
 app.use(morgan('dev'));
 
-app.use('/quiz',authRouter)
+app.use('/quiz',authRouter);
+app.use('/quiz',questionRouter);
 
 
 
