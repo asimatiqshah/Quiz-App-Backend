@@ -10,5 +10,5 @@ const ProgressSchema = new mongoose.Schema(
     }
 )
 // Create a model
-const ProgressModal = mongoose.model('progress-details', ProgressSchema);
+const ProgressModal = mongoose.model('progress-records', ProgressSchema);
 module.exports = ProgressModal;
