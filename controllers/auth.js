@@ -7,10 +7,10 @@ const JWT_SECRET =
 
 const handleCreateNewUser = async (req, res) => {
     const { name, email, password, gender, role } = req.body;
-
+    
     const createdAt = new Date();
     const vistedHistory = [];
-
+    console.log(req.body);
     //400
     if (!name || !email || !password || !gender || !role || !createdAt || !vistedHistory) {
         return res.status(400).send({
