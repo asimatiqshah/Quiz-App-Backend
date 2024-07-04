@@ -1,4 +1,9 @@
+const jwt = require('jsonwebtoken');
 const AuthModal = require("../models/auth");
+
+//JWT Token
+const JWT_SECRET =
+  "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jdsds039[]]pou89ywe";
 
 const handleCreateNewUser = async (req, res) => {
     const { name, email, password, gender, role } = req.body;
@@ -81,10 +86,15 @@ const handleLoginUser = async (req, res) => {
             //(i.e., the document after the $push operation in this case). This ensures that you
             //receive the document with the new changes included.
         )
+
+        //Making JWT
+        const token = jwt.sign({email:result.email},JWT_SECRET);
+
         return res.status(200).send({
             status:true,
             message:"Login Sucessfull",
-            data:visited
+            data:visited,
+            usertoken:token
         })
 
     } catch (error) {
