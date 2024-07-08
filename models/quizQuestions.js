@@ -5,6 +5,7 @@ const questionSchema = new mongoose.Schema(
         question: { type: String, required: true },
         options: { type: Array, required: true },
         image: { type: String },
+        category_id: { type: String,required: true },
         question_marks: { type: String, required: true },
         is_correct: { type: Array, required: true },
         createdAt: { type: String, required: true },

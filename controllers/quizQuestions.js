@@ -1,9 +1,9 @@
 const QuestionModal = require("../models/quizQuestions");
 
 const handleCreateNewQuestion = async (req, res) => {
-  const { quiz_title, question, options, image, question_marks, is_correct } =
+  const { quiz_title, question, options, image, question_marks, is_correct,category } =
     req.body;
-  console.log(quiz_title, question, options, image, question_marks, is_correct);
+  console.log(quiz_title, question, options, image, question_marks, is_correct,category);
   const createdAt = new Date();
   //400
   if (
@@ -13,7 +13,8 @@ const handleCreateNewQuestion = async (req, res) => {
     !image ||
     !question_marks ||
     !is_correct ||
-    !createdAt
+    !createdAt ||
+    !category
   ) {
     return res.status(400).send({
       status: false,
@@ -28,6 +29,7 @@ const handleCreateNewQuestion = async (req, res) => {
       question,
       options,
       image,
+      category,
       question_marks,
       is_correct,
       createdAt
@@ -44,6 +46,22 @@ const handleCreateNewQuestion = async (req, res) => {
   }
 };
 
+const handleViewAllQuestion = async (req,res)=>{
+  try {
+    let result = await QuestionModal.find();
+   if(result){
+    return res.status(200).send({
+        status:true,
+        message:"All Questions",
+        data:result
+    })
+   }
+  } catch (error) {
+    console.log(`Something Went Wrong in Adding Question ${error}`);
+  }
+}
+
 module.exports = {
   handleCreateNewQuestion,
+  handleViewAllQuestion
 };

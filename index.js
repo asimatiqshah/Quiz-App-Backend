@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const authRouter = require('./routes/auth.js');
 const questionRouter = require('./routes/quizQuestions.js');
 const progressRouter = require('./routes/progressDetails.js');
+const quizCategoryRouter = require('./routes/quizQuestionCategory.js')
 const { ConnectionDB } = require('./connection.js');
 const jwt = require('jsonwebtoken');
 
@@ -25,6 +26,7 @@ app.use(morgan('dev'));
 app.use('/quiz',authRouter);
 app.use('/quiz',questionRouter);
 app.use('/quiz',progressRouter);
+app.use('/quiz',quizCategoryRouter)
 
 app.post('/userdata',async (req,res)=>{
     const {token} = req.body;
