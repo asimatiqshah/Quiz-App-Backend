@@ -1,9 +1,9 @@
 const QuestionModal = require("../models/quizQuestions");
 
 const handleCreateNewQuestion = async (req, res) => {
-  const { quiz_title, question, options, image, question_marks, is_correct,category } =
+  const { quiz_title, question, options, image, question_marks, is_correct,category_id } =
     req.body;
-  console.log(quiz_title, question, options, image, question_marks, is_correct,category);
+  console.log(quiz_title, question, options, image, question_marks, is_correct,category_id);
   const createdAt = new Date();
   //400
   if (
@@ -14,7 +14,7 @@ const handleCreateNewQuestion = async (req, res) => {
     !question_marks ||
     !is_correct ||
     !createdAt ||
-    !category
+    !category_id
   ) {
     return res.status(400).send({
       status: false,
@@ -29,7 +29,7 @@ const handleCreateNewQuestion = async (req, res) => {
       question,
       options,
       image,
-      category,
+      category_id,
       question_marks,
       is_correct,
       createdAt

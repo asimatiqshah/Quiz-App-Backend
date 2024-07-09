@@ -13,5 +13,5 @@ const questionSchema = new mongoose.Schema(
 )
 
 // Create a model
-const QuestionModal = mongoose.model('quiz -questions', questionSchema);
+const QuestionModal = mongoose.model('quiz-questions', questionSchema);
 module.exports = QuestionModal;

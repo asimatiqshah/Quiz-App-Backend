@@ -2,7 +2,7 @@ const CategoryModal = require("../models/quizQuestionCategory")
 
 const handleCreateNewCategory= async (req,res)=>{
     const {category_name} = req.body;
-
+    console.log(category_name);
     //400 
     if(!category_name){
         return res.status(400).send({
@@ -17,7 +17,7 @@ const handleCreateNewCategory= async (req,res)=>{
     if(checkCategory){
         return res.status(400).send({
             status:false,
-            message:"Email Already Exist"
+            message:"Category Already Exist"
         })
     }
 

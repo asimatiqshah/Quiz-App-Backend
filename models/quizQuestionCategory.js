@@ -6,5 +6,5 @@ const categorySchema = new mongoose.Schema(
 )
 
 // Create a model
-const CategoryModal = mongoose.model('quiz-questions', categorySchema);
+const CategoryModal = mongoose.model('quiz-categories', categorySchema);
 module.exports = CategoryModal;
