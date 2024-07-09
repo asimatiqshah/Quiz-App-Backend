@@ -38,6 +38,23 @@ const handleCreateNewCategory= async (req,res)=>{
         console.log(`Something Went Wrong in Adding Question ${error}`);
     }
 }
+
+const handleShowCategories = async (req,res)=>{
+    try {
+        let result = await CategoryModal.find();
+        if(result){
+            return res.status(200).send({
+                status:true,
+                message:"Data Show Sucessfully",
+                data:result
+            })
+        }
+    } catch (error) {
+        console.log(`Something Went Wrong in Adding Question ${error}`);
+    }
+}
+
 module.exports = {
-    handleCreateNewCategory
+    handleCreateNewCategory,
+    handleShowCategories
 }
