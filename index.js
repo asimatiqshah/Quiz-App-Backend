@@ -26,7 +26,11 @@ app.use(morgan('dev'));
 app.use('/quiz',authRouter);
 app.use('/quiz',questionRouter);
 app.use('/quiz',progressRouter);
-app.use('/quiz',quizCategoryRouter)
+app.use('/quiz',quizCategoryRouter);
+
+app.get('/',(req,res)=>{
+    return res.json("Hey Hurray!");
+})
 
 app.post('/userdata',async (req,res)=>{
     const {token} = req.body;
