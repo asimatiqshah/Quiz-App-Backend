@@ -4,6 +4,6 @@ const router = express.Router();
 
 //Routes
 router.post('/categoryAdd',handleCreateNewCategory);
-router.get('/categoryShow',handleShowCategories)
+router.get('/categoryShow',handleShowCategories);
 
 module.exports = router;
