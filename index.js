@@ -6,6 +6,7 @@ const progressRouter = require('./routes/progressDetails.js');
 const quizCategoryRouter = require('./routes/quizQuestionCategory.js')
 const { ConnectionDB } = require('./connection.js');
 const jwt = require('jsonwebtoken');
+const cors = require("cors");
 
 //JWT Token
 const JWT_SECRET =
@@ -22,6 +23,7 @@ ConnectionDB(dbUrl);
 //middleware
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(cors());
 
 app.use('/quiz',authRouter);
 app.use('/quiz',questionRouter);
