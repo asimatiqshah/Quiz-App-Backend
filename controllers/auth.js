@@ -1,7 +1,18 @@
 const jwt = require('jsonwebtoken');
 const AuthModal = require("../models/auth");
 const nodemailer = require("nodemailer");
+const randomstring = require("randomstring");
 const { EMAIL, PASSWORD } = require('../env.js');
+
+//Variable
+let OTPCache = {};
+//Generate OTP
+const generateOTP=()=>{
+    return randomstring.generate({
+        length: 4,
+        charset: 'numeric'
+    });
+}
 
 //JWT Token
 const JWT_SECRET =
@@ -38,7 +49,13 @@ const handleCreateNewUser = async (req, res) => {
             name, email, password: passwordHash, gender, role, createdAt, vistedHistory
         });
         if (result) {
-
+            const otp = generateOTP();
+            OTPCache = {
+                otp:otp,
+                useremail : email
+            };
+            res.cookie("emailToken",OTPCache);
+            console.log(OTPCache);
             //Email Sending Code
             //**********************//
             // 1.config
@@ -55,13 +72,13 @@ const handleCreateNewUser = async (req, res) => {
             const mailOptions = {
                 from: EMAIL,
                 to: email,
-                subject: "Registration Successful: Welcome to Quizzlet",
-                html: "Welcome to Quizzlet",
+                subject: "Verify Your Email",
+                html: `Your OTP Code is <h2>${otp}</h2>`,
             };
             //Now Send Email
             transporter.sendMail(mailOptions)
             .then((actualData)=>{
-                console.log(actualData);
+                
             })
             .catch((err)=>{
                 return res.status(500).json({ err });
@@ -70,7 +87,7 @@ const handleCreateNewUser = async (req, res) => {
             //Sucess Status
             return res.status(200).send({
                 status: true,
-                message: "Email Registered Sucessfully",
+                message: "Please Check Your Email",
                 data: result
             })
         }
@@ -79,6 +96,31 @@ const handleCreateNewUser = async (req, res) => {
         console.log(`Something went wrong ERROR ${error}`);
     }
 }
+
+const handleVerifyEmail=(req,res)=>{
+    const {otpcode} = req.body;
+    const {emailToken} = req.cookies;
+    // if(emailToken.)
+    console.log(otpcode,emailToken);
+
+    if(otpcode == emailToken.otp){
+        return res.status(200).send({
+            status:true,
+            message:"Email Registered Sucessfully"
+        })
+    }else{
+        return res.status(400).send({
+            status:false,
+            message:"OTP Does not Match"
+        })
+    }
+
+   // res.cookie('token', '5608');
+    // let {token} = req.cookies;
+    
+    
+}
+
 
 const handleLoginUser = async (req, res) => {
     try {
@@ -138,5 +180,6 @@ const handleLoginUser = async (req, res) => {
 
 module.exports = {
     handleCreateNewUser,
-    handleLoginUser
+    handleLoginUser,
+    handleVerifyEmail
 }

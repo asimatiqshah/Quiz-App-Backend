@@ -7,6 +7,7 @@ const quizCategoryRouter = require('./routes/quizQuestionCategory.js')
 const { ConnectionDB } = require('./connection.js');
 const jwt = require('jsonwebtoken');
 const cors = require("cors");
+const cookieParser = require('cookie-parser'); 
 
 //JWT Token
 const JWT_SECRET =
@@ -24,6 +25,7 @@ ConnectionDB(dbUrl);
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
+app.use(cookieParser()); 
 
 app.use('/quiz',authRouter);
 app.use('/quiz',questionRouter);
