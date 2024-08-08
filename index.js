@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const authRouter = require('./routes/auth.js');
 const questionRouter = require('./routes/quizQuestions.js');
-const progressRouter = require('./routes/progressDetails.js');
+const progressRouter = require('./routes/progressRecords.js');
 const quizCategoryRouter = require('./routes/quizQuestionCategory.js')
 const { ConnectionDB } = require('./connection.js');
 const jwt = require('jsonwebtoken');
@@ -26,6 +26,8 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
 app.use(cookieParser()); 
+
+
 
 app.use('/quiz',authRouter);
 app.use('/quiz',questionRouter);
