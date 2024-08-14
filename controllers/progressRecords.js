@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 const ProgressModal = require("../models/progressRecords");
 const AuthModal = require("../models/auth");
+const CategoryModal = require("../models/quizQuestionCategory");
 
+//This Method Is For Create New Records
 const handleProgressRecords = async (req, res) => {
-  const { user_id, attempted_questions, score_secured, time_spend, status } =
+  const { user_id,category_id, attempted_questions, score_secured, time_spend, status } =
     req.body;
   const createdAt = new Date();
 
@@ -14,7 +16,8 @@ const handleProgressRecords = async (req, res) => {
     !score_secured ||
     !time_spend ||
     !status ||
-    !createdAt
+    !createdAt ||
+    !category_id
   ) {
     return res.status(200).send({
       status: false,
@@ -26,10 +29,26 @@ const handleProgressRecords = async (req, res) => {
   //checking the ID is exist in database ***Remember user exist in another table
   try {
     let isValid = await AuthModal.findOne({ _id: user_id });
+    if(!isValid){
+      return res.status(400).send({
+        status:false,
+        message:'User ID is not Valid'
+      })
+    }
+
+    let categoryValid = await CategoryModal.findOne({_id:category_id});
+    if(!categoryValid){
+      return res.status(400).send({
+        status:false,
+        message:"Category ID is not Valid"
+      })
+    }
+
     //200
     try {
       let result = await ProgressModal.create({
         user_id,
+        category_id,
         attempted_questions,
         score_secured,
         time_spend,

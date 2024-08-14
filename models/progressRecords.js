@@ -2,6 +2,7 @@ const mongoose  = require("mongoose");//Schema
 const ProgressSchema = new mongoose.Schema(
     {
         user_id: { type: String, required: true },
+        category_id: { type: String, required: true },
         attempted_questions: { type: String, required: true },
         score_secured: { type: String, required: true },
         time_spend: { type: String,required: true },
