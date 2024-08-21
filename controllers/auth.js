@@ -71,7 +71,7 @@ const handleCreateNewUser = async (req, res) => {
         const passwordHash = btoa(password);
         console.log(passwordHash);
         let result = await AuthModal.create({
-            name, email, password: passwordHash, gender, role, createdAt, vistedHistory
+            name, email, password: passwordHash, gender, role, userimage:'dummyImage.jpg', createdAt, vistedHistory
         });
         if (result) {
 
@@ -204,9 +204,15 @@ const handleLoginUser = async (req, res) => {
 
 }
 
+
+const handleImageUpload =  async (req,res)=>{
+    console.log(req.body);
+}
+
 module.exports = {
     handleCreateNewUser,
     handleLoginUser,
     handleVerifyEmail,
-    handleUserIndvidual
+    handleUserIndvidual,
+    handleImageUpload
 }

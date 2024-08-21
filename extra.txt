@@ -1,0 +1,23 @@
+app.post('/upload', upload.single('image'), async function  (req, res, next) {
+     // Upload an image
+     try {
+        const uploadResult = await cloudinary.uploader.upload(req.file.path);
+        if(uploadResult){
+            return res.status(200).send({
+                status:true,
+                message:'Sucessfully Added In Cloudinary',
+                data:uploadResult
+            })
+        }
+        
+     } catch (error) {
+        return res.status(500).send({
+            status:false,
+            message:'Error In Uploading',
+            error
+        })
+     }
+    
+    console.log(uploadResult);
+  })
+
