@@ -1,13 +1,18 @@
+const express = require('express');
 const jwt = require('jsonwebtoken');
 const AuthModal = require("../models/auth");
 const nodemailer = require("nodemailer");
 const randomstring = require("randomstring");
+const path = require('path');
+const fs = require('fs');
+const cloudinary = require('../utils/cloudinary.js');
 const { EMAIL, PASSWORD } = require('../env.js');
 
 //Variable
 let OTPCache = {};
+const app = express();
 //Generate OTP
-const generateOTP=()=>{
+const generateOTP = () => {
     return randomstring.generate({
         length: 4,
         charset: 'numeric'
@@ -18,27 +23,38 @@ const generateOTP=()=>{
 const JWT_SECRET =
     "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jdsds039[]]pou89ywe";
 
-const handleUserIndvidual = async (req,res)=>{
-    const {email} = req.body;
+
+//middleware express file upload
+/////////////////////////////////
+// default options
+// Use express-fileupload middleware (to access uploaded files easily)
+// app.use(fileUpload({
+//     useTempFiles: true,
+//     tempFileDir: path.join(__dirname, '../tmp/'), // Temp directory for uploaded files
+//   }));
+
+
+const handleUserIndvidual = async (req, res) => {
+    const { email } = req.body;
     try {
-        if(!email){
+        if (!email) {
             return res.status(400).send({
-                status:false,
-                message:"Email token required"
+                status: false,
+                message: "Email token required"
             })
         }
-        let result = await AuthModal.findOne({email});
-        if(!result){
+        let result = await AuthModal.findOne({ email });
+        if (!result) {
             return res.status(400).send({
-                status:false,
-                message:"Error In Fetching Individual Detail"
+                status: false,
+                message: "Error In Fetching Individual Detail"
             })
         }
 
         return res.status(200).send({
-            status:true,
-            message:"Individual User Detail",
-            data:result
+            status: true,
+            message: "Individual User Detail",
+            data: result
         })
     } catch (error) {
         console.log(`Something went in HandleUserIndividual ${error}`);
@@ -69,9 +85,8 @@ const handleCreateNewUser = async (req, res) => {
     //200
     try {
         const passwordHash = btoa(password);
-        console.log(passwordHash);
         let result = await AuthModal.create({
-            name, email, password: passwordHash, gender, role, userimage:'dummyImage.jpg', createdAt, vistedHistory
+            name, email, password: passwordHash, gender, role, userimage: '', createdAt, vistedHistory
         });
         if (result) {
 
@@ -81,10 +96,10 @@ const handleCreateNewUser = async (req, res) => {
             //Do not call otp variable after this because it regenerate otp
             const otp = generateOTP();
             OTPCache = {
-                otp:otp,
-                useremail : email
+                otp: otp,
+                useremail: email
             };
-            res.cookie("emailToken",OTPCache,{
+            res.cookie("emailToken", OTPCache, {
                 httpOnly: true
             });
             console.log(OTPCache);
@@ -129,23 +144,23 @@ const handleCreateNewUser = async (req, res) => {
     }
 }
 
-const handleVerifyEmail=(req,res)=>{
-    const {otpcode} = req.body;
-    const {emailToken} = req.cookies;
-    console.log(otpcode,emailToken);
-    if(otpcode == emailToken.otp){
+const handleVerifyEmail = (req, res) => {
+    const { otpcode } = req.body;
+    const { emailToken } = req.cookies;
+    console.log(otpcode, emailToken);
+    if (otpcode == emailToken.otp) {
         //clear OTP cache
         res.clearCookie('emailToken');
         return res.status(200).send({
-            status:true,
-             message:"Email Registered Sucessfully",
-         })
-     }else{
-         return res.status(400).send({
-             status:false,
-             message:"OTP Does not Match"
-         })
-     }    
+            status: true,
+            message: "Email Registered Sucessfully",
+        })
+    } else {
+        return res.status(400).send({
+            status: false,
+            message: "OTP Does not Match"
+        })
+    }
 }
 
 const handleLoginUser = async (req, res) => {
@@ -190,7 +205,6 @@ const handleLoginUser = async (req, res) => {
 
         //Making JWT
         const token = jwt.sign({ email: result.email }, JWT_SECRET);
-
         return res.status(200).send({
             status: true,
             message: "Login Sucessfull",
@@ -204,9 +218,69 @@ const handleLoginUser = async (req, res) => {
 
 }
 
+const handleUpdateUser = async (req, res) => {
+    const { name, email, password, gender, role } = req.body;
+    let userimage = "";
+    try {
+        //check email field 
+        if (!name || !email || !password || !gender || !role) {
+            return res.status(400).send({
+                status: false,
+                message: "All field is required"
+            })
+        }
+        //check email is exist in database
+        let result = await AuthModal.findOne({ email });
+        if (!result) {
+            return res.status(400).send({
+                status: false,
+                message: "Email not exists in database"
+            })
+        }
+        
+        //update data in database
+        //make object
+        let newObj = {
+            name,
+            email,
+            password:btoa(password),
+            gender,
+            role,
+        }
+            if (req.body.image && req.body.image !==null) {
+                const uploadResult = await cloudinary.uploader.upload(req.body.image);
+                console.log(uploadResult);
+                if (uploadResult) {
+                    if (userimage == "") {
+                        newObj.userimage = uploadResult.secure_url;
+                    }
+                }
+            }
+        //***  Update in Database ***/
+        let updateDB_Result = await AuthModal.updateOne(
+            {email},
+            {
+                $set:newObj
+            },
+            { returnDocument: 'after' }
+        );
+        let {matchedCount} = updateDB_Result;
+        if(matchedCount == 1){
+            return res.status(200).send({
+                status:true,
+                message:"Your changes is sucessfully updated",
+                data:newObj
+            })
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
 
-const handleImageUpload =  async (req,res)=>{
-    console.log(req.body);
+
+const handleImageUpload = async (req, res) => {
+
+
 }
 
 module.exports = {
@@ -214,5 +288,6 @@ module.exports = {
     handleLoginUser,
     handleVerifyEmail,
     handleUserIndvidual,
-    handleImageUpload
+    handleImageUpload,
+    handleUpdateUser
 }

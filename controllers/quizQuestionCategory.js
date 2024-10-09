@@ -1,10 +1,9 @@
 const CategoryModal = require("../models/quizQuestionCategory")
 
 const handleCreateNewCategory= async (req,res)=>{
-    const {category_name} = req.body;
-    console.log(category_name);
+    const {category_name,category_image,category_color} = req.body;
     //400 
-    if(!category_name){
+    if(!category_name || !category_image || !category_color ){
         return res.status(400).send({
             status:false,
             message:'All Fields Required'
@@ -13,7 +12,6 @@ const handleCreateNewCategory= async (req,res)=>{
 
     //CHECK CATEGORY EXIST OR NOT
     let checkCategory = await CategoryModal.findOne({category_name});
-    console.log(checkCategory);
     if(checkCategory){
         return res.status(400).send({
             status:false,
@@ -24,7 +22,9 @@ const handleCreateNewCategory= async (req,res)=>{
     //200
     try {
         let result = await CategoryModal.create({
-            category_name
+            category_name,
+            category_image,
+            category_color
         });
         if(result){
             return res.status(200).send({

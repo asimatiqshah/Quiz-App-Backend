@@ -1,0 +1,101 @@
+
+const handleUpdateUser = async (req, res) => {
+    const { name, email, password, gender, role } = req.body;
+    console.log("i am here");
+    console.log(name, email, password, gender, role );
+    let userimage = "";
+    try {
+        //check email field 
+        if (!name || !email || !password || !gender || !role) {
+            return res.status(400).send({
+                status: false,
+                message: "All field is required"
+            })
+        }
+        //check email is exist in database
+        let result = await AuthModal.findOne({ email });
+        if (!result) {
+            return res.status(400).send({
+                status: false,
+                message: "Email not exists in database"
+            })
+        }
+
+        
+        //Temp Folder Check Created or not
+        const tempFolderPath = path.join(__dirname, '../tmp'); // or wherever your temp folder is
+        console.log(tempFolderPath);
+        if(!fs.existsSync(tempFolderPath)){
+            console.log("Tmp folder does not exist");
+            try {
+                fs.mkdirSync(tempFolderPath, { recursive: true });
+                console.log("Tmp folder created");
+            } catch (error) {
+                console.log(`Error creating temp folder: ${error}`);
+            }
+
+        }else{
+            console.log("Tmp folder exists");
+        }
+        
+        //update data in database
+
+        //make object
+        let newObj = {
+            name,
+            email,
+            password,
+            gender,
+            role
+        }
+
+        //check image for image file attachment
+        console.log(req.files);
+        if (req.files) {
+            const files = req.files.image;
+            if (!files) {
+                return res.status(400).send({
+                    status: false,
+                    message: "Image Key is reqired"
+                })
+            }
+            
+
+            if (files.tempFilePath !== null) {
+                const uploadResult = await cloudinary.uploader.upload(files.tempFilePath);
+                console.log(uploadResult);
+                if (uploadResult) {
+                    //Remove temp file
+                    fs.unlinkSync(files.tempFilePath,(err)=>{
+                        if (err) console.log("Error deleting temp file:", err);
+                    })
+                    if (userimage == "") {
+                        newObj.userimage = uploadResult.secure_url;
+                    }
+                }
+            }
+        }
+
+        //***  File Attachement End ***/
+        let updateDB_Result = await AuthModal.updateOne(
+            {email},
+            {
+                $set:newObj
+            },
+            { returnDocument: 'after' }
+        );
+        console.log(updateDB_Result);
+        let {matchedCount} = updateDB_Result;
+        if(matchedCount == 1){
+            return res.status(200).send({
+                status:true,
+                message:"Your changes is sucessfully updated",
+                data:newObj
+            })
+        }
+
+
+    } catch (error) {
+        console.log(error);
+    }
+}

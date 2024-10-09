@@ -9,7 +9,6 @@ const jwt = require('jsonwebtoken');
 const cors = require("cors");
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const fileUpload = require('express-fileupload');
 const path = require('path');
 const fs = require('fs');
 const cloudinary = require('./utils/cloudinary.js');
@@ -31,20 +30,8 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
 app.use(cookieParser());
+app.use(bodyParser.json()); // for JSON data
 app.use(bodyParser.urlencoded({ extended: true }));
-
-//middleware express file upload
-/////////////////////////////////
-
-// default options
-// app.use(fileUpload());
-// Use express-fileupload middleware (to access uploaded files easily)
-app.use(fileUpload({
-    useTempFiles: true,
-    tempFileDir: path.join(__dirname, 'tmp'), // Temp directory for uploaded files
-  }));
-
-
 
 app.use('/quiz', authRouter);
 app.use('/quiz', questionRouter);
@@ -86,34 +73,6 @@ app.post('/userdata', async (req, res) => {
 //     console.log(req.body);
 //     console.log(req.file);
 // })
-
-app.post('/upload', async function  (req, res) {
-    console.log(req.files);
-    const file = req.files.image;  // Access the uploaded file
-    try {
-       const uploadResult = await cloudinary.uploader.upload(file.tempFilePath);
-       if(uploadResult){
-
-        // Remove the temporary file after upload
-        fs.unlinkSync(file.tempFilePath);
-           return res.status(200).send({
-               status:true,
-               message:'Sucessfully Added In Cloudinary',
-               data:uploadResult
-           })
-       }
-       
-    } catch (error) {
-       return res.status(500).send({
-           status:false,
-           message:'Error In Uploading',
-           error
-       })
-    }
- });
-
-
-
 
 // listen
 app.listen(PORT, () => {
